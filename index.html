@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Surat Untuk Kamu 💖</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      background-image: url('6.gif'); /* BG awal untuk amplop */
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: background-image 1s ease-in-out;
+    }
+
+    .container {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      aspect-ratio: 4 / 3;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1;
+    }
+
+    .envelope {
+      width: 100%;
+      height: 100%;
+      background-color: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      cursor: pointer;
+      transition: opacity 0.8s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      position: relative;
+      text-align: center;
+    }
+
+    .flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background-color: #dddddd;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+    }
+
+    .click-text {
+      position: relative;
+      z-index: 1;
+      margin-top: 50%;
+      font-size: 20px;
+      color: black;
+    }
+
+    .letter {
+      width: 100%;
+      min-height: 100px;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .sentence {
+      opacity: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: opacity 0.8s ease;
+      font-size: 45px;
+      color: white;
+      max-width: 100%;
+      text-shadow: 2px 2px 5px black;
+    }
+
+    .sentence.visible {
+      opacity: 1;
+    }
+
+    .hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #replayBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: white;
+      color: #d81b60;
+      font-size: 1rem;
+      border: 2px solid #d81b60;
+      border-radius: 8px;
+      cursor: pointer;
+      display: none;
+      z-index: 2;
+    }
+
+    #replayBtn:hover {
+      background-color: #ffe6f0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Musik -->
+<audio id="bgMusic" src="musikku.mp3" loop></audio>
+
+<div class="container">
+  <div class="envelope" id="envelope" onclick="openLetter()">
+    <div class="flap"></div>
+    <span class="click-text">Klik disini</span>
+  </div>
+
+  <div class="letter" id="letter">
+    <div id="text-content"></div>
+  </div>
+</div>
+
+<button id="replayBtn" onclick="replayLetter()">🔁 Baca Ulang</button>
+
+<script>
+  const sentences = [
+    "Haiii Wanita yang maniss dan lucuu",
+    "Ada hal yang ingin aku sampain nih",
+    "Ko kamu bisa sih cantik banget",
+    "Udah cantikk, lucu, pinter baik lagi",
+    "Beh semua sifat baik diborong sama kamu dh",
+    "1000 kata tidak cukup untuk mengatakan seberapa perfact kamu di mataku",
+    "Apa lagi senyuman mu itu beh manisnya madu pun iri dengan manisnya senyuman mu itu",
+    "Jika itu kamu akupun siap untum menyaingi AU dengan judul 3726 MDPL itu",
+    "Jika Rangga punya Andini",
+    "Maka aku punya Kamu ❤️"
+  ];
+
+  let p;
+  let currentTimeouts = [];
+
+  function openLetter() {
+    const envelope = document.getElementById('envelope');
+    const letter = document.getElementById('letter');
+    const textContent = document.getElementById('text-content');
+    const replayBtn = document.getElementById('replayBtn');
+
+    // Ganti background ke background surat
+    document.body.style.backgroundImage = "url('bg-surat.gif')";
+
+    envelope.classList.add('hidden');
+    replayBtn.style.display = 'none';
+
+    setTimeout(() => {
+      envelope.style.display = 'none';
+      letter.style.display = 'flex';
+      showSentenceSequence(sentences, textContent, 3000);
+      playMusic();
+    }, 800);
+  }
+
+  function showSentenceSequence(sentences, container, delay = 3000) {
+    let i = 0;
+    container.innerHTML = '';
+    p = document.createElement('p');
+    p.className = 'sentence';
+    container.appendChild(p);
+
+    function showNext() {
+      if (i < sentences.length) {
+        p.classList.remove('visible');
+
+        const timeout1 = setTimeout(() => {
+          p.textContent = sentences[i];
+          p.classList.add('visible');
+          i++;
+          const timeout2 = setTimeout(showNext, delay);
+          currentTimeouts.push(timeout2);
+        }, 500);
+
+        currentTimeouts.push(timeout1);
+      } else {
+        const btnTimeout = setTimeout(() => {
+          document.getElementById('replayBtn').style.display = 'block';
+        }, 1000);
+        currentTimeouts.push(btnTimeout);
+      }
+    }
+
+    showNext();
+  }
+
+  function replayLetter() {
+    currentTimeouts.forEach(t => clearTimeout(t));
+    currentTimeouts = [];
+
+    document.getElementById('replayBtn').style.display = 'none';
+    showSentenceSequence(sentences, document.getElementById('text-content'), 3000);
+    playMusic();
+  }
+
+  function playMusic() {
+    const audio = document.getElementById('bgMusic');
+    audio.play().catch(() => {
+      console.warn("Autoplay diblokir, user harus klik dulu.");
+    });
+  }
+</script>
+
+</body>
+</html>
